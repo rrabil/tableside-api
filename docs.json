@@ -15,8 +15,8 @@
         "pages": [
           "index",
           "quickstart",
-          "patron flow",
-          "staff flow"
+          "api-flows/patron",
+          "api-flows/staff"
         ]
       }
     ],
