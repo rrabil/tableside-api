@@ -1,0 +1,199 @@
+---
+title: "Patron Flow"
+description: "How patrons order food"
+
+---
+
+# Patron API Flow
+
+Patrons can browse the menu, check ingreident quantities, view dish details, and place an order.
+
+## 1. Start Browsing
+
+### Request
+
+The client sends an HTTP request to `https://{{baseUrl}}/dishes` to get a list of available dishes. To view dishes in a particular category, include `filter=category.eq~{CategoryName}` in the query parameters.
+
+```
+curl -X GET "https://{{baseUrl}}/dishes?filter=category.eq~Appetizer"
+```
+
+### Response
+
+If the request was successful, the server responds with a `200 OK` status code with the response body containing the `{name}`, `{description}`, `{category}`, `{ingredients}`, and other details.
+
+The example below shows two results from the "Appetizer" category.
+
+```
+{
+    "results": [
+        {
+            "id": "6af1f160b7c431c173cf9d55",
+            "created_at": "2026-01-25T03:22:32.097Z",
+            "updated_at": "2026-11-09T13:51:54.966Z",
+            "name": "Bruschetta al Pomodoro",
+            "description": "Toasted bread topped with a mixture of ripe tomatoes, garlic, basil, and olive oil.",
+            "category": "Appetizer",
+            "preparation_time": 40,
+            "price": 299,
+            "image_name": "bruschetta_al_pomodoro",
+            "station": "cold",
+            "ingredients": [
+                {
+                    "ingredient_id": "6af1f160b7c431c173cf9d41",
+                    "is_essential": true,
+                    "_id": "6af1f160b7c431c173cf9d56"
+                },
+                {
+                    "ingredient_id": "6af1f160b7c431c173cf9d33",
+                    "is_essential": false,
+                    "_id": "6af1f160b7c431c173cf9d57"
+                }
+            ]
+        },
+        {
+            "id": "6af1f160b7c431c173cf9d58",
+            "created_at": "2026-03-16T11:29:29.846Z",
+            "updated_at": "2026-11-09T15:54:26.589Z",
+            "name": "Arancini di Riso",
+            "description": "Crispy, golden rice balls stuffed with a cheesy filling and served with marinara sauce.",
+            "category": "Appetizer",
+            "preparation_time": 60,
+            "price": 7999,
+            "image_name": "arancini_di_riso",
+            "station": "hot",
+            "ingredients": [
+                {
+                    "ingredient_id": "6af1f160b7c431c173cf9d23",
+                    "is_essential": true,
+                    "_id": "6af1f160b7c431c173cf9d59"
+                },
+                {
+                    "ingredient_id": "6af1f160b7c431c173cf9d22",
+                    "is_essential": false,
+                    "_id": "6af1f160b7c431c173cf9d5a"
+                },
+                {
+                    "ingredient_id": "6af1f160b7c431c173cf9d20",
+                    "is_essential": false,
+                    "_id": "6af1f160b7c431c173cf9d5b"
+                },
+                {
+                    "ingredient_id": "6af1f160b7c431c173cf9d1f",
+                    "is_essential": false,
+                    "_id": "6af1f160b7c431c173cf9d5c"
+                },
+                {
+                    "ingredient_id": "6af1f160b7c431c173cf9d40",
+                    "is_essential": true,
+                    "_id": "6af1f160b7c431c173cf9d5d"
+                }
+            ]
+        }
+  ]
+}
+```
+
+## 2. Check Ingredient Quantities
+
+### Request
+
+The client sends an HTTP request to `https://{{baseUrl}}/ingredients/{id}` to get the details of a dish's ingredients. To view the in-stock quantity of the ingredient, include the `name` and `in_stock_qty` field in the query parameters.
+
+```
+curl -X GET "https://{{baseUrl}}/ingredients/id?fields=name|in_stock_qty"
+```
+
+### Response
+
+If the request was successful, the server responds with a `200 OK` status code with the response body containing the dish's ingredient name and in-stock quantity.
+
+```
+{
+    "id": "6af1f160b7c431c173cf9d41",
+    "name": "Eggplant",
+    "in_stock_qty": 43
+}
+```
+
+## 3. View Dish Details
+
+### Request
+
+The client sends an HTTP request to `https://{{baseUrl}}/dishes/{id}` to get the details of a dish. 
+
+```
+curl -X GET "https://{{baseUrl}}/dishes/{id}"
+```
+
+### Response
+
+If the request was successful, the server responds with a `200 OK` status code with the response body containing the dish's details, such as its `name`, `description`, `price`, and `ingredients`.
+
+```
+{
+    "id": "6af1f160b7c431c173cf9d55",
+    "created_at": "2026-01-25T03:22:32.097Z",
+    "updated_at": "2026-11-09T13:51:54.966Z",
+    "name": "Bruschetta al Pomodoro",
+    "description": "Toasted bread topped with a mixture of ripe tomatoes, garlic, basil, and olive oil.",
+    "category": "Appetizer",
+    "price": 299,
+    "preparation_time": 40,
+    "image_name": "bruschetta_al_pomodoro",
+    "station": "cold",
+    "ingredients": [
+        {
+            "ingredient_id": "6af1f160b7c431c173cf9d41",
+            "is_essential": true,
+            "_id": "6af1f160b7c431c173cf9d56"
+        },
+        {
+            "ingredient_id": "6af1f160b7c431c173cf9d33",
+            "is_essential": false,
+            "_id": "6af1f160b7c431c173cf9d57"
+        }
+    ]
+}
+```
+
+## 4. Place an Order
+
+### Request
+
+The client sends an HTTP request to `https://{{baseUrl}}/order` to place an order. The request body must include values in the `name` and `dish_ids` fields.
+
+```
+curl -X POST "https://{{baseUrl}}/orders" \
+-H 'accept: application/json' \
+-H 'Content-Type: application/json' \
+-d {
+  "name": "Richard",
+  "table_number": 25,
+  "dish_ids": [
+    "6af1f160b7c431c173cf9d55",
+  ],
+  "special_requests": "Easy on the cheese",
+  "scheduled at": null,
+}
+```
+
+### Response
+
+If the request was successful, the server responds with a `201 Created` status code with the response body containing the order's details, including its `id`, `status`, and `priority`.
+
+```
+{
+    "id": "6b03612d2adf95b5cb2ffd1e",
+    "created_at": "2026-11-22T21:39:57.062Z",
+    "updated_at": "2026-11-22T21:39:57.062Z",
+    "scheduled_at": null,
+    "table_number": 25,
+    "status": "Received",
+    "priority": 3,
+    "dish_ids": [
+        "6af1f160b7c431c173cf9d55"
+    ],
+    "special_requests": "Easy on the cheese"
+}
+```
