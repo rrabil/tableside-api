@@ -14,7 +14,9 @@
         "group": "Getting Started",
         "pages": [
           "index",
-          "quickstart"
+          "quickstart",
+          "patron flow",
+          "staff flow"
         ]
       }
     ],
