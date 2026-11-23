@@ -203,6 +203,8 @@ If the request was successful, the server responds with a `200 OK` status code w
 
 ## 6. Prepare for Assembly
 
+### Request
+
 The client sends a PUT HTTP request to `https://{{baseUrl}}/orders/:id` and specifies a new value in the `status` field to indicate the order is ready for assembly.
 
 ```
@@ -243,6 +245,8 @@ In the example below, the `status` was successfully changed to "Ready for Assemb
 ```
 
 ## 7. Ready for Pickup
+
+### Request
 
 The client sends a PUT HTTP request to `https://{{baseUrl}}/orders/:id` and specifies a new value in the `status` field to indicate the order is ready for pickup.
 
