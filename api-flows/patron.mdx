@@ -96,13 +96,13 @@ The example below shows two results from the "Appetizer" category.
 
 The client displays these dishes as the patron's menu and uses a dish's `id` in the next steps to check ingredient availability, view details, and place an order.
 
-**Note**: I gave details about this task to Claude, and it gave back a half correct response. For the HTTP request, it used the correct endpoint and `filter` field, but did not use the `.eq` operator. In the JSON response, it included the `id` and `description` fields, but it left out many other fields for a dish (such as preparation time and station), and invented an `available` field and ommitted `is_essential`. That said, when it had access to my full draft, it gave helpful suggestions on how to clarify what I had already written.
+**Note**: I gave details about this task to Claude, and it gave back a half correct response. For the HTTP request, it used the correct endpoint and `filter` field, but did not use the `.eq` operator. In the JSON response, it included the `id` and `description` fields, but it left out many other fields for a dish (such as preparation time and station), and invented an `available` field and omitted `is_essential`. That said, when it had access to my full draft, it gave helpful suggestions on how to clarify what I had already written.
 
 ## 2. Check Ingredient Quantities
 
 ### Request
 
-The client sends an HTTP request to `https://{{baseUrl}}/ingredients/{id}` to get the details of a dish's ingredients. To view the in-stock quantity of the ingredient, include the `name` and `in_stock_qty` field in the query parameters.
+The client sends an HTTP request to `https://{{baseUrl}}/ingredients/{id}` to get the details of a dish's ingredients. To view the in-stock quantity of the ingredient, include the `name` and `in_stock_qty` fields in the query parameters.
 
 ```
 curl -X GET "https://{{baseUrl}}/ingredients/id?fields=name|in_stock_qty"
