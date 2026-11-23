@@ -20,7 +20,7 @@ curl -X GET "https://{{baseUrl}}/dishes?filter=category.eq~Appetizer"
 
 ### Response
 
-If the request was successful, the server responds with a `200 OK` status code with the response body containing all the dishes in the identified category. Each object includes the `name`, `description`, `category`, `ingredients`, and other details of the dish.
+If the request was successful, the server responds with a `200 OK` status code with the response body containing a `results` array of the dishes in the identified category. Each object includes the dish's `id`, `name`, `description`, `category`, `price` (in cents), `preparation_time`, and `ingredients`.
 
 The example below shows two results from the "Appetizer" category.
 
@@ -94,6 +94,10 @@ The example below shows two results from the "Appetizer" category.
 }
 ```
 
+The client displays these dishes as the patron's menu and uses a dish's `id` in the next steps to check ingredient availability, view details, and place an order.
+
+**Note**: I gave details about this task to Claude, and it gave back a half correct response. For the HTTP request, it used the correct endpoint and `filter` field, but did not use the `.eq` operator. In the JSON response, it included the `id` and `description` fields, but it left out many other fields for a dish (such as preparation time and station), and invented an `available` field and ommitted `is_essential`. That said, when it had access to my full draft, it gave helpful suggestions on how to clarify what I had already written.
+
 ## 2. Check Ingredient Quantities
 
 ### Request
@@ -161,9 +165,9 @@ If the request was successful, the server responds with a `200 OK` status code w
 
 ### Request
 
-The client sends an HTTP request to `https://{{baseUrl}}/order` to place an order. The request body must include values in the `name` and `dish_ids` fields.
+The client sends a POST HTTP request to `https://{{baseUrl}}/orders` to place an order. The request body must include values in the `name` and `dish_ids` fields.
 
-```json
+```
 curl -X POST "https://{{baseUrl}}/orders" \
 -H 'accept: application/json' \
 -H 'Content-Type: application/json' \
@@ -193,7 +197,6 @@ If the request was successful, the server responds with a `201 Created` status c
     "dish_ids": [
         "6af1f160b7c431c173cf9d55"
     ],
-    "special_requests": "Easy on the cheese"
 }
 ```
 
