@@ -11,7 +11,9 @@ Send requests to retrieve orders, prioritize and prepare, retrieve dishes for an
 
 ### Request
 
-The client sends an HTTP request to `https://{{baseUrl}}/orders` to get a list of orders. Include the `status` filter to retrieve orders in the "Received" status. Specify the `priority`, `table_number`, `status`, and `dish_ids` fields to retrieve those details for each order.
+The client sends an HTTP request to `https://{{baseUrl}}/orders` to get a list of orders. 
+
+Include the `status` filter to retrieve orders in the "Received" status. You can also specify the `priority`, `table_number`, `status`, and `dish_ids` fields to retrieve  more detailed information for each order.
 
 ```
 curl -X GET 'https://{{baseUrl}}/orders?fields=table_number|status|priority|dish_ids&filter=status.eq~Received'
@@ -67,7 +69,6 @@ curl -X PUT 'https://{{baseUrl}}/orders/:id' \
     "dish_ids": [
         "6af1f160b7c431c173cf9d55"
     ],
-    "special_requests": "Easy on the cheese"
 }
 ```
 
@@ -89,7 +90,6 @@ In the example below, the `priority` was successfully changed to 1. (Previously,
     "dish_ids": [
         "6af1f160b7c431c173cf9d55"
     ],
-    "special_requests": "Easy on the cheese"
 }
 ```
 
@@ -111,7 +111,6 @@ curl -X PUT 'https://{{baseUrl}}/orders/:id' \
     "dish_ids": [
         "6af1f160b7c431c173cf9d55"
     ],
-    "special_requests": "Easy on the cheese"
 }
 ```
 
@@ -133,7 +132,6 @@ In the example below, the `status` was successfully changed to "In Progress". (P
     "dish_ids": [
         "6af1f160b7c431c173cf9d55"
     ],
-    "special_requests": "Easy on the cheese"
 }
 ```
 
@@ -177,7 +175,7 @@ curl -X GET 'https://{{baseUrl}}/dishes/:id/ingredients'
 
 ### Response
 
-If the request was successful, the server responds with a `200 OK` status code with a list of the dish's ingredients, including their price and quantity.
+If the request was successful, the server responds with a `200 OK` status code with a list of the dish's ingredients, including their price and quantity. The dish includes bell peppers and eggplant.
 
 ```json
 {
@@ -205,7 +203,48 @@ If the request was successful, the server responds with a `200 OK` status code w
 
 ## 6. Prepare for Assembly
 
-The client sends a PUT HTTP request to `https://{{baseUrl}}/orders/:id` and specifies a new value in the `status` field to indicate the order is  for pickup.
+The client sends a PUT HTTP request to `https://{{baseUrl}}/orders/:id` and specifies a new value in the `status` field to indicate the order is ready for assembly.
+
+```
+curl -X PUT 'https://{{baseUrl}}/orders/:id' \
+-H 'accept: application/json' \
+-H 'Content-Type: application/json' \
+-d 
+{
+    "table_number": 25,
+    "status": "Ready for Assembly",
+    "priority": 1,
+    "dish_ids": [
+        "6af1f160b7c431c173cf9d55"
+    ],
+    "special_requests": "Easy on the cheese"
+}
+```
+
+### Response
+
+If the request was successful, the server responds with a `200 OK` status code with the response body containing the updated `status` field. 
+
+In the example below, the `status` was successfully changed to "Ready for Assembly". (Previously, the `status` was "In Progress".)
+
+```json
+{
+    "id": "6b03612d2adf95b5cb2ffd1e",
+    "created_at": "2026-11-22T21:39:57.062Z",
+    "updated_at": "2026-11-22T22:44:53.089Z",
+    "scheduled_at": null,
+    "table_number": 25,
+    "status": "Ready for Assembly",
+    "priority": 1,
+    "dish_ids": [
+        "6af1f160b7c431c173cf9d55"
+    ],
+}
+```
+
+## 7. Ready for Pickup
+
+The client sends a PUT HTTP request to `https://{{baseUrl}}/orders/:id` and specifies a new value in the `status` field to indicate the order is ready for pickup.
 
 ```
 curl -X PUT 'https://{{baseUrl}}/orders/:id' \
@@ -219,7 +258,6 @@ curl -X PUT 'https://{{baseUrl}}/orders/:id' \
     "dish_ids": [
         "6af1f160b7c431c173cf9d55"
     ],
-    "special_requests": "Easy on the cheese"
 }
 ```
 
@@ -227,7 +265,7 @@ curl -X PUT 'https://{{baseUrl}}/orders/:id' \
 
 If the request was successful, the server responds with a `200 OK` status code with the response body containing the updated `status` field. 
 
-In the example below, the `status` was successfully changed to "Ready for Pickup". (Previously, the `status` was "In Progress".)
+In the example below, the `status` was successfully changed to "Ready for Assembly". (Previously, the `status` was "Ready for Assembly".)
 
 ```json
 {
@@ -241,6 +279,5 @@ In the example below, the `status` was successfully changed to "Ready for Pickup
     "dish_ids": [
         "6af1f160b7c431c173cf9d55"
     ],
-    "special_requests": "Easy on the cheese"
 }
 ```
