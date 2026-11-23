@@ -6,7 +6,7 @@ description: "How patrons order food"
 
 # Patron API Flow
 
-Patrons can browse the menu, check ingreident quantities, view dish details, and place an order.
+Send requests to browse the menu, check ingredient quantities, view dish details, and place an order.
 
 ## 1. Start Browsing
 
@@ -20,11 +20,11 @@ curl -X GET "https://{{baseUrl}}/dishes?filter=category.eq~Appetizer"
 
 ### Response
 
-If the request was successful, the server responds with a `200 OK` status code with the response body containing the `{name}`, `{description}`, `{category}`, `{ingredients}`, and other details.
+If the request was successful, the server responds with a `200 OK` status code with the response body containing all the dishes in the identified category. Each object includes the `name`, `description`, `category`, `ingredients`, and other details of the dish.
 
 The example below shows two results from the "Appetizer" category.
 
-```
+```json
 {
     "results": [
         {
@@ -108,7 +108,7 @@ curl -X GET "https://{{baseUrl}}/ingredients/id?fields=name|in_stock_qty"
 
 If the request was successful, the server responds with a `200 OK` status code with the response body containing the dish's ingredient name and in-stock quantity.
 
-```
+```json
 {
     "id": "6af1f160b7c431c173cf9d41",
     "name": "Eggplant",
@@ -130,7 +130,7 @@ curl -X GET "https://{{baseUrl}}/dishes/{id}"
 
 If the request was successful, the server responds with a `200 OK` status code with the response body containing the dish's details, such as its `name`, `description`, `price`, and `ingredients`.
 
-```
+```json
 {
     "id": "6af1f160b7c431c173cf9d55",
     "created_at": "2026-01-25T03:22:32.097Z",
@@ -163,7 +163,7 @@ If the request was successful, the server responds with a `200 OK` status code w
 
 The client sends an HTTP request to `https://{{baseUrl}}/order` to place an order. The request body must include values in the `name` and `dish_ids` fields.
 
-```
+```json
 curl -X POST "https://{{baseUrl}}/orders" \
 -H 'accept: application/json' \
 -H 'Content-Type: application/json' \
@@ -182,7 +182,7 @@ curl -X POST "https://{{baseUrl}}/orders" \
 
 If the request was successful, the server responds with a `201 Created` status code with the response body containing the order's details, including its `id`, `status`, and `priority`.
 
-```
+```json
 {
     "id": "6b03612d2adf95b5cb2ffd1e",
     "created_at": "2026-11-22T21:39:57.062Z",
@@ -197,3 +197,7 @@ If the request was successful, the server responds with a `201 Created` status c
     "special_requests": "Easy on the cheese"
 }
 ```
+
+## 5. Order Confirmation
+
+Once the order is placed, the patron receives a receipt of confirmation, and the order details are sent to the restaurant staff to prepare the order. See [Staff Flow](./staff).

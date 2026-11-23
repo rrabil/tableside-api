@@ -5,24 +5,242 @@ description: "How staff manage orders"
 
 # Staff API Flow
 
-Description of API Flow.
+Send requests to retrieve orders, prioritize and prepare, retrieve dishes for an order, display dish ingredients, and assemble the order.
 
-## 1. Step 1 Title
-
-### Request
-
-The client sends an HTTP request to `{describe the purpose of the API request}`.
-
-### Response
-
-If the request was successful, the server responds with a `{insert status code}` status code with the response body containing `{describe the important fields of the response}`.
-
-## 2. Step 2 Title
+## 1. Display an Order
 
 ### Request
 
-See previous example.
+The client sends an HTTP request to `https://{{baseUrl}}/orders` to get a list of orders. Include the `status` filter to retrieve orders in the "Received" status. Specify the `priority`, `table_number`, `status`, and `dish_ids` fields to retrieve those details for each order.
+
+```
+curl -X GET 'https://{{baseUrl}}/orders?fields=table_number|status|priority|dish_ids&filter=status.eq~Received'
+```
 
 ### Response
 
-See previous example.
+If the request was successful, the server responds with a `200 OK` status code with the response body containing each order's `id`, `table_number`, `status`, `priority`, and `dish_ids`.
+
+```json
+{
+    "results": [
+        {
+            "id": "6b03612d2adf95b5cb2ffd1e",
+            "table_number": 25,
+            "status": "Received",
+            "priority": 3,
+            "dish_ids": [
+                "6af1f160b7c431c173cf9d55"
+            ]
+        },
+        {
+            "id": "6af1f161b7c431c173cf9df8",
+            "table_number": 4,
+            "status": "Received",
+            "priority": 3,
+            "dish_ids": [
+                "6af1f160b7c431c173cf9d58",
+                "6af1f160b7c431c173cf9d80",
+                "6af1f160b7c431c173cf9dc8",
+                "6af1f160b7c431c173cf9d6d"
+            ]
+        },
+    ] 
+}
+```
+
+## 2. Prioritize an Order
+
+### Request
+
+The client sends a PUT HTTP request to `https://{{baseUrl}}/orders/:id` and specifies a new value in the `priority` field to update the order's priority.
+
+```
+curl -X PUT 'https://{{baseUrl}}/orders/:id' \
+-H 'accept: application/json' \
+-H 'Content-Type: application/json' \
+-d 
+{
+    "table_number": 25,
+    "status": "Received",
+    "priority": 1,
+    "dish_ids": [
+        "6af1f160b7c431c173cf9d55"
+    ],
+    "special_requests": "Easy on the cheese"
+}
+```
+
+### Response
+
+If the request was successful, the server responds with a `200 OK` status code with the response body containing the updated `priority` field. 
+
+In the example below, the `priority` was successfully changed to 1. (Previously, the `priority` was 3.)
+
+```json
+{
+    "id": "6b03612d2adf95b5cb2ffd1e",
+    "created_at": "2026-11-22T21:39:57.062Z",
+    "updated_at": "2026-11-22T22:44:53.089Z",
+    "scheduled_at": null,
+    "table_number": 25,
+    "status": "In Progress",
+    "priority": 1,
+    "dish_ids": [
+        "6af1f160b7c431c173cf9d55"
+    ],
+    "special_requests": "Easy on the cheese"
+}
+```
+
+## 3. Initiate Preparation
+
+### Request
+
+The client sends a PUT HTTP request to `https://{{baseUrl}}/orders/:id` and specifies a new value in the `status` field to initiate the order's preparation.
+
+```
+curl -X PUT 'https://{{baseUrl}}/orders/:id' \
+-H 'accept: application/json' \
+-H 'Content-Type: application/json' \
+-d 
+{
+    "table_number": 25,
+    "status": "In Progress",
+    "priority": 1,
+    "dish_ids": [
+        "6af1f160b7c431c173cf9d55"
+    ],
+    "special_requests": "Easy on the cheese"
+}
+```
+
+### Response
+
+If the request was successful, the server responds with a `200 OK` status code with the response body containing the updated `status` field. 
+
+In the example below, the `status` was successfully changed to "In Progress". (Previously, the `status` was "Received".)
+
+```json
+{
+    "id": "6b03612d2adf95b5cb2ffd1e",
+    "created_at": "2026-11-22T21:39:57.062Z",
+    "updated_at": "2026-11-22T22:44:53.089Z",
+    "scheduled_at": null,
+    "table_number": 25,
+    "status": "In Progress",
+    "priority": 1,
+    "dish_ids": [
+        "6af1f160b7c431c173cf9d55"
+    ],
+    "special_requests": "Easy on the cheese"
+}
+```
+
+
+## 4. Prepare Orders by Station
+
+### Request
+
+The client sends an HTTP request to `https://{{baseUrl}}/orders/:id/dishes` and includes the `fields` parameter to identify the station for each dish in the order. 
+
+```
+curl -X GET 'https://{{baseUrl}}/orders/:id/dishes?fields=name|station'
+```
+
+### Response
+
+If the request was successful, the server responds with a `200 OK` status code with the `station` identified.
+
+```json
+{
+    "results": [
+        {
+            "id": "6af1f160b7c431c173cf9d55",
+            "name": "Bruschetta al Pomodoro",
+            "station": "cold"
+        }
+    ],
+    "total_results": 1
+}
+```
+
+## 5. Display Dish Ingredients
+
+### Request
+
+The client sends an HTTP request to `https://{{baseUrl}}/dishes/:id/ingredients` to identify ingredients in a dish associated with the order.
+
+```
+curl -X GET 'https://{{baseUrl}}/dishes/:id/ingredients'
+```
+
+### Response
+
+If the request was successful, the server responds with a `200 OK` status code with a list of the dish's ingredients, including their price and quantity.
+
+```json
+{
+    "results": [
+        {
+            "id": "6af1f160b7c431c173cf9d33",
+            "created_at": "2026-10-28T02:35:29.167Z",
+            "updated_at": "2026-11-08T20:20:19.458Z",
+            "name": "Bell Peppers",
+            "in_stock_qty": 85,
+            "price": 2999
+        },
+        {
+            "id": "6af1f160b7c431c173cf9d41",
+            "created_at": "2026-10-31T08:55:59.215Z",
+            "updated_at": "2026-11-08T21:18:06.905Z",
+            "name": "Eggplant",
+            "in_stock_qty": 43,
+            "price": 799
+        }
+    ],
+    "total_results": 2
+}
+```
+
+## 6. Prepare for Assembly
+
+The client sends a PUT HTTP request to `https://{{baseUrl}}/orders/:id` and specifies a new value in the `status` field to indicate the order is  for pickup.
+
+```
+curl -X PUT 'https://{{baseUrl}}/orders/:id' \
+-H 'accept: application/json' \
+-H 'Content-Type: application/json' \
+-d 
+{
+    "table_number": 25,
+    "status": "Ready for Pickup",
+    "priority": 1,
+    "dish_ids": [
+        "6af1f160b7c431c173cf9d55"
+    ],
+    "special_requests": "Easy on the cheese"
+}
+```
+
+### Response
+
+If the request was successful, the server responds with a `200 OK` status code with the response body containing the updated `status` field. 
+
+In the example below, the `status` was successfully changed to "Ready for Pickup". (Previously, the `status` was "In Progress".)
+
+```json
+{
+    "id": "6b03612d2adf95b5cb2ffd1e",
+    "created_at": "2026-11-22T21:39:57.062Z",
+    "updated_at": "2026-11-22T22:44:53.089Z",
+    "scheduled_at": null,
+    "table_number": 25,
+    "status": "Ready for Pickup",
+    "priority": 1,
+    "dish_ids": [
+        "6af1f160b7c431c173cf9d55"
+    ],
+    "special_requests": "Easy on the cheese"
+}
+```
