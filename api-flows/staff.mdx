@@ -13,7 +13,7 @@ Send requests to retrieve orders, prioritize and prepare, retrieve dishes for an
 
 The client sends an HTTP request to `https://{{baseUrl}}/orders` to get a list of orders. 
 
-Include the `status` filter to retrieve orders in the "Received" status. You can also specify the `priority`, `table_number`, `status`, and `dish_ids` fields to retrieve  more detailed information for each order.
+Include the `status` filter to retrieve orders in the "Received" status. You can also specify the `priority`, `table_number`, `status`, and `dish_ids` fields to retrieve more detailed information for each order.
 
 ```
 curl -X GET 'https://{{baseUrl}}/orders?fields=table_number|status|priority|dish_ids&filter=status.eq~Received'
@@ -269,7 +269,7 @@ curl -X PUT 'https://{{baseUrl}}/orders/:id' \
 
 If the request was successful, the server responds with a `200 OK` status code with the response body containing the updated `status` field. 
 
-In the example below, the `status` was successfully changed to "Ready for Assembly". (Previously, the `status` was "Ready for Assembly".)
+In the example below, the `status` was successfully changed to "Ready for Pickup". (Previously, the `status` was "Ready for Assembly".)
 
 ```json
 {
